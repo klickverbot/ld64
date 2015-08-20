@@ -635,7 +635,6 @@ unsigned int UnwindInfoAtom<A>::makeCompressedSecondLevelPage(const std::vector<
 	//  4) run out of uniqueInfos to encode
 	std::map<compact_unwind_encoding_t, unsigned int> pageSpecificEncodings;
 	uint32_t space4 =  (pageSize - sizeof(unwind_info_compressed_second_level_page_header))/sizeof(uint32_t);
-	std::vector<uint8_t> encodingIndexes;
 	int index = endIndex-1;
 	int entryCount = 0;
 	uint64_t lastEntryAddress = uniqueInfos[index].funcTentAddress;
@@ -672,8 +671,6 @@ unsigned int UnwindInfoAtom<A>::makeCompressedSecondLevelPage(const std::vector<
 				}
 			}
 		}
-		if ( canDo ) 
-			encodingIndexes.push_back(encodingIndex);
 		// compute function offset
 		uint32_t funcOffsetWithInPage = lastEntryAddress - info.funcTentAddress;
 		if ( funcOffsetWithInPage > 0x00FFFF00 ) {
