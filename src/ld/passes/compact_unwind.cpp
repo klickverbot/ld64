@@ -681,16 +681,15 @@ unsigned int UnwindInfoAtom<A>::makeCompressedSecondLevelPage(const std::vector<
 			canDo = false; // case 2)
 			if (_s_log) fprintf(stderr, "can't use compressed page with %u entries because function offset too big\n", entryCount);
 		}
-		else {
-			++entryCount;
-		}
 		// check room for entry
-		if ( (pageSpecificEncodings.size()+entryCount) >= space4 ) {
+		if ( (pageSpecificEncodings.size()+entryCount+1) >= space4 ) {
 			canDo = false; // case 1)
-			--entryCount;
 			if (_s_log) fprintf(stderr, "end of compressed page with %u entries because full\n", entryCount);
 		}
 		//if (_s_log) fprintf(stderr, "space4=%d, pageSpecificEncodings.size()=%ld, entryCount=%d\n", space4, pageSpecificEncodings.size(), entryCount);
+		if ( canDo ) {
+			++entryCount;
+		}
 	}
 	
 	// check for cases where it would be better to use a regular (non-compressed) page
@@ -726,6 +725,8 @@ unsigned int UnwindInfoAtom<A>::makeCompressedSecondLevelPage(const std::vector<
 		uint8_t encodingIndex;
 		if ( encodingMeansUseDwarf(info.encoding) ) {
 			// dwarf entries are always in page specific encodings
+			assert(pageSpecificEncodings.find(info.encoding+i) !=
+				pageSpecificEncodings.end());
 			encodingIndex = pageSpecificEncodings[info.encoding+i];
 		}
 		else {
